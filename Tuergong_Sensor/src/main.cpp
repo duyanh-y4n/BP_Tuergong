@@ -34,21 +34,24 @@ String httpGETRequest(const char* serverName, int with_payload);
 //=======================================================================
 
 void setup() {
-  delay(1000);
+  int time = millis();
+  delay(50);
   Serial.begin(115200);
   WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
-  delay(1000);
+  delay(50);
   WiFi.mode(WIFI_STA);        //This line hides the viewing of ESP as wifi hotspot
   
   WiFi.begin(ssid, password);     //Connect to your WiFi router
   Serial.println("");
 
-  Serial.print("Connecting");
+  Serial.print("Connecting ... ");
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
+      delay(1);
   }
+  Serial.print("successful - init time ");
+  Serial.print(millis()-time);
+  Serial.println(" ms");
 
   //If connection successful show IP address in serial monitor
   Serial.println("");
@@ -71,6 +74,7 @@ void loop() {
   //httpGETRequest(LED_OFF,0);
   //Serial.println(LED_OFF);
   //delay(500);  //GET Data at every 5 seconds
+
   /*
    * trigger bell
    * */
@@ -78,6 +82,7 @@ void loop() {
   delay(3000);  //trigger bell every 3 seconds
   Serial.print(response);
 }
+
 //=======================================================================
 //                    Function Implementation
 //=======================================================================
@@ -92,7 +97,7 @@ String httpGETRequest(const char* serverName, int with_payload) {
   // Send HTTP POST request
   int httpResponseCode = http.GET();
 
-  String payload = "--";
+  String payload = "";
 
   if (httpResponseCode>0) {
     Serial.print("HTTP Response code: ");
