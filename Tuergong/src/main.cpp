@@ -16,18 +16,22 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiAP.h>
+#include "DFRobotDFPlayerMini.h"
 
 #define LED_BUILTIN 2   // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
+#define LED_OUT 32
 
 // Set these to your desired credentials.
 const char *ssid = "TuergongHAW";
 const char *password = "AnhTungLong";
 
 WiFiServer server(80);
+// void Read_SDCard();
 
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_OUT, OUTPUT);
 
   Serial.begin(115200);
   Serial.println();
@@ -42,6 +46,8 @@ void setup() {
 
   Serial.println("Tuergong Server started");
 }
+
+
 
 void loop() {
   WiFiClient client = server.available();   // listen for incoming clients
@@ -82,10 +88,12 @@ void loop() {
 
         // Check to see if the client request was "GET /H" or "GET /L":
         if (currentLine.endsWith("GET /H")) {
-          digitalWrite(LED_BUILTIN, HIGH);               // GET /H turns the LED on
+          digitalWrite(LED_BUILTIN, HIGH);  
+          digitalWrite(LED_OUT, HIGH);             // GET /H turns the LED on
         }
         if (currentLine.endsWith("GET /L")) {
-          digitalWrite(LED_BUILTIN, LOW);                // GET /L turns the LED off
+          digitalWrite(LED_BUILTIN, LOW); 
+          digitalWrite(LED_OUT, LOW);                // GET /L turns the LED off
         }
         if (currentLine.endsWith("GET /bell")) {
           /*
