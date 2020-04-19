@@ -78,8 +78,6 @@ void setup() {
   set_up_MiniPlayer();
 }
 
-
-
 void loop() {
   controll_MiniPlayer();
 }
@@ -133,8 +131,7 @@ void set_up_MiniPlayer()
 
 void controll_MiniPlayer()
 {
-   WiFiClient client = server.available();   // listen for incoming clients 
- //-----------------------------------------------------------------------------------------////-----------------------------------------------------------------------------------------//
+ //-----------------------------------------------------------------------------------------//
   // Controll with GPIO
  if(digitalRead(MP3_NEXT)!=0)
  {
@@ -203,6 +200,8 @@ void controll_MiniPlayer()
     }
  }
  //-----------------------------------------------------------------------------------------//
+ WiFiClient client = server.available();   // listen for incoming clients 
+
  if (client) {                             // if you get a client,
     Serial.println("New Client.");           // print a message out the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
@@ -222,9 +221,14 @@ void controll_MiniPlayer()
             client.println();
 
             // the content of the HTTP response follows the header:
-            client.print("Click <a href=\"/H\">here</a> to turn ON the LED.<br>");
-            client.print("Click <a href=\"/L\">here</a> to turn OFF the LED.<br>");
+            client.print("Click <a href=\"/N\">here</a> to next MP3.<br>");
+            client.print("Click <a href=\"/B\">here</a> to previous MP3.<br>");
+            client.print("Click <a href=\"/U\">here</a> to up Volume sound.<br>");
+            client.print("Click <a href=\"/D\">here</a> to down Volume sound.<br>");
+            client.print("Click <a href=\"/P\">here</a> to Play sound.<br>");
+            client.print("Click <a href=\"/S\">here</a> to stop sound.<br>");
             client.print("Click <a href=\"/bell\">here</a> to trigger sound.<br>");
+           
            
             // The HTTP response ends with another blank line:
             client.println();
@@ -238,16 +242,35 @@ void controll_MiniPlayer()
         }
 
         // Check to see if the client request was "GET /H" or "GET /L":
-        if (currentLine.endsWith("GET /H")) {
+        if (currentLine.endsWith("GET /N")) {
           Serial.println(F("next--------------------"));
           myDFPlayer.next();
           Serial.println(myDFPlayer.readCurrentFileNumber()); //read current play file number
         }
-        if (currentLine.endsWith("GET /L")) {
-          digitalWrite(LED_BUILTIN, LOW); 
-          digitalWrite(LED_OUT, LOW);                // GET /L turns the LED off
+        else if (currentLine.endsWith("GET /B")) {
+          Serial.println(F("previous--------------------"));
+          myDFPlayer.previous();
+          Serial.println(myDFPlayer.readCurrentFileNumber()); //read current play file number
         }
-        if (currentLine.endsWith("GET /bell")) {
+        else if (currentLine.endsWith("GET /U")) {
+          Serial.println(F("up--------------------"));
+          myDFPlayer.volumeUp();
+          Serial.println(myDFPlayer.readVolume()); //read current volume              
+        }
+        else if (currentLine.endsWith("GET /D")) {
+          Serial.println(F("down--------------------"));
+          myDFPlayer.volumeDown();
+          Serial.println(myDFPlayer.readVolume()); //read current volume             
+        }
+        else if (currentLine.endsWith("GET /P")) {
+          Serial.println(F("start--------------------"));
+          myDFPlayer.start();         
+        }
+        else if (currentLine.endsWith("GET /S")) {
+          Serial.println(F("pause--------------------"));
+          myDFPlayer.pause();
+        }
+        else if (currentLine.endsWith("GET /bell")) {
               // Controll the MP3 Next or Up-Down the Volume
               /*
               Do something here with controller MP3
@@ -272,7 +295,5 @@ void controll_MiniPlayer()
     delay(500);
   }
  }  
-
-
 }
 
